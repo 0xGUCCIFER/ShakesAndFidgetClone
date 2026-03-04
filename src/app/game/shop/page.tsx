@@ -96,12 +96,8 @@ export default function ShopPage() {
 
     const supabase = createClient()
 
-    // Deduct currency
-    const updateField = currency === 'gold' ? { gold: character.gold - price } : { gems: character.gems - price }
-    await supabase.from('profiles').update(updateField).eq('id', character.user_id)
-
-    // Add to inventory
-    const { data: invData } = await supabase
+    // Add to inventory first
+    const { data: invData, error: invError } = await supabase
       .from('inventory')
       .insert({
         character_id: character.id,
@@ -110,17 +106,25 @@ export default function ShopPage() {
       .select('*')
       .single()
 
-    if (invData) {
-      updateCharacter(updateField)
-      addInventoryItem({
-        id: invData.id,
-        character_id: invData.character_id,
-        item: shopItem.item,
-        equipped: false,
-        slot_index: 0,
-      })
-      showToast('success', `${shopItem.item.name} purchased!`)
+    if (invError || !invData) {
+      showToast('error', 'Failed to purchase item.')
+      setBuying(false)
+      return
     }
+
+    // Deduct currency only after successful inventory insert
+    const updateField = currency === 'gold' ? { gold: character.gold - price } : { gems: character.gems - price }
+    await supabase.from('profiles').update(updateField).eq('id', character.user_id)
+
+    updateCharacter(updateField)
+    addInventoryItem({
+      id: invData.id,
+      character_id: invData.character_id,
+      item: shopItem.item,
+      equipped: false,
+      slot_index: 0,
+    })
+    showToast('success', `${shopItem.item.name} purchased!`)
 
     setBuying(false)
     setSelectedItem(null)

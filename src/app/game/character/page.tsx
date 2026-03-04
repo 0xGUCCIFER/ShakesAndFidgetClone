@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { useGameStore } from '@/lib/store/gameStore'
 import { CharacterAvatar, ProgressBar, StatBlock, ItemCard, Modal, Button } from '@/components/ui'
+import { showToast } from '@/components/ui/Toast'
 import { Sword, Shield, Brain, Heart, Clover, Crown, Shirt, Footprints, CircleDot, Gem } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 import type { InventoryItem, ItemSlot } from '@/lib/store/types'
 
 const equipmentSlots: { slot: ItemSlot; label: string; icon: typeof Sword; position: string }[] = [
@@ -20,7 +22,9 @@ const equipmentSlots: { slot: ItemSlot; label: string; icon: typeof Sword; posit
 export default function CharacterPage() {
   const character = useGameStore((s) => s.character)
   const inventory = useGameStore((s) => s.inventory)
+  const setInventory = useGameStore((s) => s.setInventory)
   const [selectedSlot, setSelectedSlot] = useState<ItemSlot | null>(null)
+  const [toggling, setToggling] = useState(false)
 
   if (!character) {
     return (
@@ -36,6 +40,45 @@ export default function CharacterPage() {
 
   const getAvailableItems = (slot: ItemSlot) =>
     inventory.filter((i) => !i.equipped && i.item.slot === slot)
+
+  async function toggleEquip(inv: InventoryItem, equip: boolean) {
+    if (!character || toggling) return
+    setToggling(true)
+
+    const supabase = createClient()
+
+    if (equip) {
+      const existing = inventory.find((i) => i.equipped && i.item.slot === inv.item.slot && i.id !== inv.id)
+      if (existing) {
+        await supabase.from('inventory').update({ equipped: false }).eq('id', existing.id)
+      }
+    }
+
+    const { error } = await supabase
+      .from('inventory')
+      .update({ equipped: equip })
+      .eq('id', inv.id)
+
+    if (error) {
+      showToast('error', 'Failed to change equipment.')
+      setToggling(false)
+      return
+    }
+
+    setInventory(
+      inventory.map((i) => {
+        if (i.id === inv.id) return { ...i, equipped: equip }
+        if (equip && i.equipped && i.item.slot === inv.item.slot && i.id !== inv.id) {
+          return { ...i, equipped: false }
+        }
+        return i
+      })
+    )
+
+    showToast('success', equip ? `${inv.item.name} equipped!` : `${inv.item.name} unequipped.`)
+    setToggling(false)
+    setSelectedSlot(null)
+  }
 
   // Calculate stat bonuses from equipment
   const bonuses = equippedItems.reduce(
@@ -148,7 +191,7 @@ export default function CharacterPage() {
                   <ItemCard item={getEquippedItem(selectedSlot)!.item} />
                   <div>
                     <p className="text-sm text-parchment font-semibold">{getEquippedItem(selectedSlot)!.item.name}</p>
-                    <Button variant="secondary" size="sm" className="mt-1">
+                    <Button variant="secondary" size="sm" className="mt-1" onClick={() => toggleEquip(getEquippedItem(selectedSlot!)!, false)} disabled={toggling}>
                       Unequip
                     </Button>
                   </div>
@@ -161,7 +204,10 @@ export default function CharacterPage() {
             ) : (
               <div className="grid grid-cols-4 gap-2">
                 {getAvailableItems(selectedSlot).map((inv) => (
-                  <ItemCard key={inv.id} item={inv.item} />
+                  <button key={inv.id} onClick={() => toggleEquip(inv, true)} disabled={toggling} className="cursor-pointer hover:scale-105 transition-transform">
+                    <ItemCard item={inv.item} />
+                    <p className="text-[9px] text-text-muted truncate mt-0.5">{inv.item.name}</p>
+                  </button>
                 ))}
               </div>
             )}
