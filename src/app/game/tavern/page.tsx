@@ -10,7 +10,7 @@ import type { Quest, QuestDifficulty, ActiveQuest } from '@/lib/store/types'
 
 type DifficultyFilter = 'all' | QuestDifficulty
 
-export default function TavernePage() {
+export default function TavernPage() {
   const character = useGameStore((s) => s.character)
   const activeQuest = useGameStore((s) => s.activeQuest)
   const setActiveQuest = useGameStore((s) => s.setActiveQuest)
@@ -47,7 +47,6 @@ export default function TavernePage() {
     loadQuests()
   }, [loadQuests])
 
-  // Check if active quest completed
   useEffect(() => {
     if (!activeQuest) return
 
@@ -68,7 +67,7 @@ export default function TavernePage() {
   async function startQuest(quest: Quest) {
     if (!character || activeQuest) return
     if (character.stamina < (quest as Quest & { stamina_cost?: number }).duration_seconds / 60) {
-      showToast('error', 'Nicht genug Ausdauer!')
+      showToast('error', 'Not enough stamina!')
       return
     }
 
@@ -87,7 +86,7 @@ export default function TavernePage() {
       .single()
 
     if (error) {
-      showToast('error', 'Quest konnte nicht gestartet werden.')
+      showToast('error', 'Failed to start quest.')
       return
     }
 
@@ -100,7 +99,7 @@ export default function TavernePage() {
         ends_at: data.completes_at,
       }
       setActiveQuest(aq)
-      showToast('quest', `Quest "${quest.name}" gestartet!`)
+      showToast('quest', `Quest "${quest.name}" started!`)
     }
   }
 
@@ -108,11 +107,8 @@ export default function TavernePage() {
     if (!activeQuest || !character) return
 
     const supabase = createClient()
-
-    // Delete active quest
     await supabase.from('active_quests').delete().eq('id', activeQuest.id)
 
-    // Grant rewards
     const xpGain = activeQuest.quest.xp_reward
     const goldGain = activeQuest.quest.gold_reward
 
@@ -132,7 +128,7 @@ export default function TavernePage() {
     setReward({ xp: xpGain, gold: goldGain })
     setShowReward(true)
     setActiveQuest(null)
-    showToast('success', 'Quest abgeschlossen!')
+    showToast('success', 'Quest completed!')
   }
 
   const filteredQuests =
@@ -141,11 +137,11 @@ export default function TavernePage() {
       : quests.filter((q) => q.difficulty === filter)
 
   const filters: { value: DifficultyFilter; label: string }[] = [
-    { value: 'all', label: 'Alle' },
-    { value: 'easy', label: 'Einfach' },
-    { value: 'medium', label: 'Mittel' },
-    { value: 'hard', label: 'Schwer' },
-    { value: 'legendary', label: 'Legendaer' },
+    { value: 'all', label: 'All' },
+    { value: 'easy', label: 'Easy' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'hard', label: 'Hard' },
+    { value: 'legendary', label: 'Legendary' },
   ]
 
   if (loading) {
@@ -161,7 +157,7 @@ export default function TavernePage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-xl font-bold text-primary-light">Taverne</h1>
+        <h1 className="font-display text-xl font-bold text-primary-light">Tavern</h1>
         <button
           onClick={loadQuests}
           className="p-2 rounded hover:bg-bg-light text-text-muted hover:text-parchment transition-colors"
@@ -170,11 +166,10 @@ export default function TavernePage() {
         </button>
       </div>
 
-      {/* Active Quest */}
       {activeQuest && (
         <div className="border-2 border-accent rounded-lg p-1">
           <div className="text-xs text-accent font-display uppercase tracking-wider px-3 pt-2 mb-1">
-            Aktive Quest
+            Active Quest
           </div>
           <QuestCard
             quest={activeQuest.quest}
@@ -184,7 +179,6 @@ export default function TavernePage() {
         </div>
       )}
 
-      {/* Filters */}
       <div className="flex items-center gap-2 flex-wrap">
         <Filter className="w-4 h-4 text-text-muted" />
         {filters.map((f) => (
@@ -202,7 +196,6 @@ export default function TavernePage() {
         ))}
       </div>
 
-      {/* Quest Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredQuests.map((quest) => (
           <QuestCard
@@ -214,11 +207,10 @@ export default function TavernePage() {
       </div>
 
       {filteredQuests.length === 0 && (
-        <p className="text-center text-text-muted py-8">Keine Quests gefunden.</p>
+        <p className="text-center text-text-muted py-8">No quests found.</p>
       )}
 
-      {/* Reward Modal */}
-      <Modal open={showReward} onClose={() => setShowReward(false)} title="Quest abgeschlossen!">
+      <Modal open={showReward} onClose={() => setShowReward(false)} title="Quest Completed!">
         {reward && (
           <div className="text-center space-y-4">
             <Gift className="w-12 h-12 text-primary-light mx-auto" />
@@ -230,7 +222,7 @@ export default function TavernePage() {
                 <span className="text-primary-light font-bold">+{reward.gold} Gold</span>
               </p>
             </div>
-            <Button onClick={() => setShowReward(false)}>Weiter</Button>
+            <Button onClick={() => setShowReward(false)}>Continue</Button>
           </div>
         )}
       </Modal>

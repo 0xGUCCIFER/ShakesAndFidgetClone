@@ -50,7 +50,7 @@ export default function InventoryPage() {
       .eq('id', inv.id)
 
     if (error) {
-      showToast('error', 'Fehler beim Aendern der Ausruestung.')
+      showToast('error', 'Failed to change equipment.')
       setToggling(false)
       return
     }
@@ -67,14 +67,14 @@ export default function InventoryPage() {
     )
 
     setSelectedItem(null)
-    showToast('success', newEquipped ? `${inv.item.name} ausgeruestet!` : `${inv.item.name} abgelegt.`)
+    showToast('success', newEquipped ? `${inv.item.name} equipped!` : `${inv.item.name} unequipped.`)
     setToggling(false)
   }
 
   return (
     <div className="space-y-6">
       <h1 className="font-display text-xl font-bold text-primary-light flex items-center gap-2">
-        <Backpack className="w-5 h-5" /> Inventar
+        <Backpack className="w-5 h-5" /> Inventory
         <span className="text-sm text-text-muted font-normal">({inventory.length} Items)</span>
       </h1>
 
@@ -86,7 +86,7 @@ export default function InventoryPage() {
           onChange={(e) => setSlotFilter(e.target.value)}
           className="px-2 py-1 rounded bg-bg-darkest border border-bg-light text-parchment text-xs focus:outline-none"
         >
-          <option value="all">Alle Slots</option>
+          <option value="all">All Slots</option>
           {['weapon', 'shield', 'head', 'chest', 'legs', 'boots', 'ring', 'amulet'].map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
@@ -96,7 +96,7 @@ export default function InventoryPage() {
           onChange={(e) => setRarityFilter(e.target.value)}
           className="px-2 py-1 rounded bg-bg-darkest border border-bg-light text-parchment text-xs focus:outline-none"
         >
-          <option value="all">Alle Raritaeten</option>
+          <option value="all">All Rarities</option>
           {['common', 'uncommon', 'rare', 'epic', 'legendary'].map((r) => (
             <option key={r} value={r}>{r}</option>
           ))}
@@ -122,7 +122,7 @@ export default function InventoryPage() {
           </div>
         ))}
         {filteredInventory.length === 0 && (
-          <p className="col-span-full text-center text-text-muted py-8">Keine Items gefunden.</p>
+          <p className="col-span-full text-center text-text-muted py-8">No items found.</p>
         )}
       </div>
 
@@ -159,10 +159,10 @@ export default function InventoryPage() {
                 disabled={toggling}
                 className="flex-1"
               >
-                {selectedItem.equipped ? 'Ablegen' : 'Ausruesten'}
+                {selectedItem.equipped ? 'Unequip' : 'Equip'}
               </Button>
               <Button variant="outline" onClick={() => setSelectedItem(null)} className="flex-1">
-                Schliessen
+                Close
               </Button>
             </div>
           </div>

@@ -35,7 +35,7 @@ interface ChatMsg {
   name?: string
 }
 
-export default function GildePage() {
+export default function GuildPage() {
   const character = useGameStore((s) => s.character)
   const [guild, setGuild] = useState<GuildInfo | null>(null)
   const [members, setMembers] = useState<Member[]>([])
@@ -53,7 +53,6 @@ export default function GildePage() {
     if (!character) return
     const supabase = createClient()
 
-    // Check if character is in a guild
     const { data: membership } = await supabase
       .from('guild_members')
       .select('guild_id')
@@ -66,7 +65,6 @@ export default function GildePage() {
       return
     }
 
-    // Load guild info
     const { data: guildData } = await supabase
       .from('guilds')
       .select('*')
@@ -77,7 +75,6 @@ export default function GildePage() {
       setGuild(guildData)
     }
 
-    // Load members
     const { data: memberData } = await supabase
       .from('guild_members')
       .select('*, character:characters(profile_id, profiles(display_name, class, level))')
@@ -100,7 +97,6 @@ export default function GildePage() {
       )
     }
 
-    // Load chat
     const { data: chatData } = await supabase
       .from('guild_chat')
       .select('*, character:characters(profile_id, profiles(display_name))')
@@ -130,7 +126,6 @@ export default function GildePage() {
     loadGuild()
   }, [loadGuild])
 
-  // Realtime chat subscription
   useEffect(() => {
     if (!guild) return
     const supabase = createClient()
@@ -152,7 +147,6 @@ export default function GildePage() {
     }
   }, [guild])
 
-  // Auto-scroll chat
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [chatMessages])
@@ -195,11 +189,11 @@ export default function GildePage() {
     })
 
     if (error) {
-      showToast('error', 'Konnte Gilde nicht beitreten.')
+      showToast('error', 'Could not join guild.')
       return
     }
 
-    showToast('success', 'Gilde beigetreten!')
+    showToast('success', 'Guild joined!')
     loadGuild()
   }
 
@@ -223,14 +217,13 @@ export default function GildePage() {
     }
 
     if (guildData) {
-      // Add self as leader member
       await supabase.from('guild_members').insert({
         guild_id: guildData.id,
         character_id: character.id,
         role: 'leader',
       })
 
-      showToast('success', 'Gilde erstellt!')
+      showToast('success', 'Guild created!')
       setShowCreate(false)
       loadGuild()
     }
@@ -244,7 +237,7 @@ export default function GildePage() {
     setGuild(null)
     setMembers([])
     setChatMessages([])
-    showToast('success', 'Gilde verlassen.')
+    showToast('success', 'Left guild.')
   }
 
   const roleIcon = (role: string) => {
@@ -261,27 +254,25 @@ export default function GildePage() {
     )
   }
 
-  // No guild view
   if (!guild) {
     return (
       <div className="space-y-6">
-        <h1 className="font-display text-xl font-bold text-primary-light">Gilde</h1>
+        <h1 className="font-display text-xl font-bold text-primary-light">Guild</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Search */}
           <div className="fantasy-card p-5 space-y-4">
             <h2 className="font-display text-sm font-semibold text-primary-light flex items-center gap-2">
-              <Search className="w-4 h-4" /> Gilde suchen
+              <Search className="w-4 h-4" /> Find Guild
             </h2>
             <div className="flex gap-2">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Gildenname..."
+                placeholder="Guild name..."
                 className="flex-1 px-3 py-2 rounded bg-bg-darkest border border-bg-light text-parchment text-sm focus:outline-none focus:border-primary"
               />
-              <Button size="sm" onClick={searchGuilds}>Suchen</Button>
+              <Button size="sm" onClick={searchGuilds}>Search</Button>
             </div>
             <div className="space-y-2">
               {searchResults.map((g) => (
@@ -290,28 +281,26 @@ export default function GildePage() {
                     <p className="text-sm text-parchment font-semibold">{g.name}</p>
                     <p className="text-xs text-text-muted">Level {g.level}</p>
                   </div>
-                  <Button size="sm" onClick={() => joinGuild(g.id)}>Beitreten</Button>
+                  <Button size="sm" onClick={() => joinGuild(g.id)}>Join</Button>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Create */}
           <div className="fantasy-card p-5 space-y-4">
             <h2 className="font-display text-sm font-semibold text-primary-light flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Gilde gruenden
+              <Plus className="w-4 h-4" /> Found a Guild
             </h2>
-            <p className="text-xs text-text-muted">Gruende deine eigene Gilde und werde zum Anfuehrer!</p>
-            <Button onClick={() => setShowCreate(true)} className="w-full">Gilde erstellen</Button>
+            <p className="text-xs text-text-muted">Create your own guild and become its leader!</p>
+            <Button onClick={() => setShowCreate(true)} className="w-full">Create Guild</Button>
           </div>
         </div>
 
-        {/* Create Modal */}
-        <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Gilde erstellen">
+        <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Create Guild">
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-display text-text-muted uppercase tracking-wider mb-1">
-                Gildenname
+                Guild Name
               </label>
               <input
                 type="text"
@@ -322,7 +311,7 @@ export default function GildePage() {
             </div>
             <div>
               <label className="block text-xs font-display text-text-muted uppercase tracking-wider mb-1">
-                Beschreibung
+                Description
               </label>
               <textarea
                 value={newGuildDesc}
@@ -331,25 +320,23 @@ export default function GildePage() {
                 className="w-full px-3 py-2 rounded bg-bg-darkest border border-bg-light text-parchment text-sm focus:outline-none focus:border-primary resize-none"
               />
             </div>
-            <Button onClick={createGuild} className="w-full">Erstellen</Button>
+            <Button onClick={createGuild} className="w-full">Create</Button>
           </div>
         </Modal>
       </div>
     )
   }
 
-  // In guild view
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-xl font-bold text-primary-light flex items-center gap-2">
           <Users className="w-5 h-5" /> {guild.name}
         </h1>
-        <Button variant="outline" size="sm" onClick={leaveGuild}>Verlassen</Button>
+        <Button variant="outline" size="sm" onClick={leaveGuild}>Leave</Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Guild Info + Members */}
         <div className="space-y-4">
           <div className="fantasy-card p-4">
             <div className="space-y-2 text-sm">
@@ -358,11 +345,11 @@ export default function GildePage() {
                 <span className="text-parchment">{guild.level}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-muted">Mitglieder</span>
+                <span className="text-text-muted">Members</span>
                 <span className="text-parchment">{members.length}/{guild.max_members}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-text-muted">Schatzkammer</span>
+                <span className="text-text-muted">Treasury</span>
                 <span className="text-primary-light">{guild.treasury_gold} Gold</span>
               </div>
             </div>
@@ -375,7 +362,7 @@ export default function GildePage() {
 
           <div className="fantasy-card p-4">
             <h3 className="font-display text-xs font-semibold text-primary-light uppercase tracking-wider mb-3">
-              Mitglieder
+              Members
             </h3>
             <div className="space-y-2">
               {members.map((m) => (
@@ -389,15 +376,14 @@ export default function GildePage() {
           </div>
         </div>
 
-        {/* Chat */}
         <div className="lg:col-span-2 fantasy-card p-4 flex flex-col" style={{ minHeight: 400 }}>
           <h3 className="font-display text-xs font-semibold text-primary-light uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <MessageSquare className="w-3.5 h-3.5" /> Gildenchat
+            <MessageSquare className="w-3.5 h-3.5" /> Guild Chat
           </h3>
 
           <div className="flex-1 overflow-y-auto space-y-2 mb-3 pr-1">
             {chatMessages.length === 0 && (
-              <p className="text-center text-text-muted text-sm py-8">Noch keine Nachrichten.</p>
+              <p className="text-center text-text-muted text-sm py-8">No messages yet.</p>
             )}
             {chatMessages.map((msg) => {
               const isOwn = msg.character_id === character?.id
@@ -409,7 +395,7 @@ export default function GildePage() {
                     )}
                     <p className="text-sm text-parchment">{msg.message}</p>
                     <p className="text-[9px] text-text-muted mt-0.5">
-                      {new Date(msg.sent_at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(msg.sent_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                 </div>
@@ -423,7 +409,7 @@ export default function GildePage() {
               type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              placeholder="Nachricht schreiben..."
+              placeholder="Type a message..."
               className="flex-1 px-3 py-2 rounded bg-bg-darkest border border-bg-light text-parchment text-sm focus:outline-none focus:border-primary"
             />
             <Button type="submit" size="sm" disabled={!chatInput.trim()}>

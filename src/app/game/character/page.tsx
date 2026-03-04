@@ -7,13 +7,13 @@ import { Sword, Shield, Brain, Heart, Clover, Crown, Shirt, Footprints, CircleDo
 import type { InventoryItem, ItemSlot } from '@/lib/store/types'
 
 const equipmentSlots: { slot: ItemSlot; label: string; icon: typeof Sword; position: string }[] = [
-  { slot: 'head', label: 'Kopf', icon: Crown, position: 'col-start-2 row-start-1' },
-  { slot: 'amulet', label: 'Amulett', icon: Gem, position: 'col-start-3 row-start-1' },
-  { slot: 'chest', label: 'Brust', icon: Shirt, position: 'col-start-2 row-start-2' },
-  { slot: 'weapon', label: 'Waffe', icon: Sword, position: 'col-start-1 row-start-2' },
-  { slot: 'shield', label: 'Schild', icon: Shield, position: 'col-start-3 row-start-2' },
-  { slot: 'legs', label: 'Beine', icon: Shirt, position: 'col-start-1 row-start-3' },
-  { slot: 'boots', label: 'Stiefel', icon: Footprints, position: 'col-start-2 row-start-3' },
+  { slot: 'head', label: 'Head', icon: Crown, position: 'col-start-2 row-start-1' },
+  { slot: 'amulet', label: 'Amulet', icon: Gem, position: 'col-start-3 row-start-1' },
+  { slot: 'chest', label: 'Chest', icon: Shirt, position: 'col-start-2 row-start-2' },
+  { slot: 'weapon', label: 'Weapon', icon: Sword, position: 'col-start-1 row-start-2' },
+  { slot: 'shield', label: 'Shield', icon: Shield, position: 'col-start-3 row-start-2' },
+  { slot: 'legs', label: 'Legs', icon: Shirt, position: 'col-start-1 row-start-3' },
+  { slot: 'boots', label: 'Boots', icon: Footprints, position: 'col-start-2 row-start-3' },
   { slot: 'ring', label: 'Ring', icon: CircleDot, position: 'col-start-3 row-start-3' },
 ]
 
@@ -25,7 +25,7 @@ export default function CharacterPage() {
   if (!character) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-text-muted">Charakter wird geladen...</p>
+        <p className="text-text-muted">Loading character...</p>
       </div>
     )
   }
@@ -74,7 +74,7 @@ export default function CharacterPage() {
               value={character.stamina}
               max={character.max_stamina}
               color="stamina"
-              label="Ausdauer"
+              label="Stamina"
             />
             <ProgressBar
               value={character.xp}
@@ -90,7 +90,7 @@ export default function CharacterPage() {
         {/* Stats */}
         <div className="fantasy-card p-5">
           <h2 className="font-display text-sm font-semibold text-primary-light uppercase tracking-wider mb-4">
-            Attribute
+            Attributes
           </h2>
           <div className="space-y-2">
             <StatBlock icon={<Sword className="w-4 h-4" />} label="STR" value={character.strength} bonus={bonuses.strength} />
@@ -104,7 +104,7 @@ export default function CharacterPage() {
         {/* Equipment */}
         <div className="fantasy-card p-5">
           <h2 className="font-display text-sm font-semibold text-primary-light uppercase tracking-wider mb-4">
-            Ausruestung
+            Equipment
           </h2>
           <div className="grid grid-cols-3 gap-3 max-w-[240px] mx-auto">
             {equipmentSlots.map((es) => {
@@ -137,27 +137,27 @@ export default function CharacterPage() {
       <Modal
         open={selectedSlot !== null}
         onClose={() => setSelectedSlot(null)}
-        title={`${selectedSlot ? equipmentSlots.find((s) => s.slot === selectedSlot)?.label ?? selectedSlot : ''} - Ausruestung`}
+        title={`${selectedSlot ? equipmentSlots.find((s) => s.slot === selectedSlot)?.label ?? selectedSlot : ''} - Equipment`}
       >
         {selectedSlot && (
           <div className="space-y-3">
             {getEquippedItem(selectedSlot) && (
               <div className="p-3 rounded bg-bg-darkest border border-primary/30">
-                <p className="text-xs text-text-muted mb-2">Aktuell ausgeruestet:</p>
+                <p className="text-xs text-text-muted mb-2">Currently equipped:</p>
                 <div className="flex items-center gap-3">
                   <ItemCard item={getEquippedItem(selectedSlot)!.item} />
                   <div>
                     <p className="text-sm text-parchment font-semibold">{getEquippedItem(selectedSlot)!.item.name}</p>
                     <Button variant="secondary" size="sm" className="mt-1">
-                      Ablegen
+                      Unequip
                     </Button>
                   </div>
                 </div>
               </div>
             )}
-            <p className="text-xs text-text-muted">Verfuegbare Items:</p>
+            <p className="text-xs text-text-muted">Available items:</p>
             {getAvailableItems(selectedSlot).length === 0 ? (
-              <p className="text-sm text-text-muted text-center py-4">Keine Items fuer diesen Slot vorhanden.</p>
+              <p className="text-sm text-text-muted text-center py-4">No items available for this slot.</p>
             ) : (
               <div className="grid grid-cols-4 gap-2">
                 {getAvailableItems(selectedSlot).map((inv) => (

@@ -28,19 +28,8 @@ export async function signUp(
     return { error: error.message }
   }
 
-  if (data.user) {
-    // Create profile (triggers auto-create character + arena_ranking)
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: data.user.id,
-      display_name: displayName,
-      class: characterClass,
-    })
-
-    if (profileError) {
-      return { error: profileError.message }
-    }
-  }
-
+  // Profile is auto-created by database trigger on auth.users
+  // which also cascades to create character + arena_ranking
   return { data: data.user }
 }
 

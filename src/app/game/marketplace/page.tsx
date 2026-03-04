@@ -21,7 +21,7 @@ interface TradeOffer {
   created_at: string
 }
 
-export default function MarktplatzPage() {
+export default function MarketplacePage() {
   const character = useGameStore((s) => s.character)
   const inventory = useGameStore((s) => s.inventory)
   const updateCharacter = useGameStore((s) => s.updateCharacter)
@@ -107,13 +107,12 @@ export default function MarktplatzPage() {
   async function buyOffer(offer: TradeOffer) {
     if (!character) return
     if (character.gold < offer.price_gold) {
-      showToast('error', 'Nicht genug Gold!')
+      showToast('error', 'Not enough gold!')
       return
     }
 
     const supabase = createClient()
 
-    // Update offer status
     const { error } = await supabase
       .from('trade_offers')
       .update({ status: 'sold' })
@@ -121,24 +120,21 @@ export default function MarktplatzPage() {
       .eq('status', 'active')
 
     if (error) {
-      showToast('error', 'Kauf fehlgeschlagen.')
+      showToast('error', 'Purchase failed.')
       return
     }
 
-    // Deduct gold
     await supabase
       .from('profiles')
       .update({ gold: character.gold - offer.price_gold })
       .eq('id', character.user_id)
 
-    // Add to inventory
     const { data: invData } = await supabase
       .from('inventory')
       .insert({ character_id: character.id, item_id: offer.item.id })
       .select('*')
       .single()
 
-    // Record history
     await supabase.from('trade_history').insert({
       trade_offer_id: offer.id,
       buyer_id: character.id,
@@ -155,7 +151,7 @@ export default function MarktplatzPage() {
       })
     }
 
-    showToast('success', `${offer.item.name} gekauft!`)
+    showToast('success', `${offer.item.name} purchased!`)
     setSelectedOffer(null)
     loadOffers()
   }
@@ -163,7 +159,7 @@ export default function MarktplatzPage() {
   async function cancelOffer(offerId: string) {
     const supabase = createClient()
     await supabase.from('trade_offers').update({ status: 'cancelled' }).eq('id', offerId)
-    showToast('success', 'Angebot zurueckgezogen.')
+    showToast('success', 'Offer withdrawn.')
     loadMyOffers()
   }
 
@@ -171,23 +167,19 @@ export default function MarktplatzPage() {
     if (!character || !sellItem || !sellPrice) return
     const price = parseInt(sellPrice)
     if (isNaN(price) || price <= 0) {
-      showToast('error', 'Ungueltiger Preis.')
+      showToast('error', 'Invalid price.')
       return
     }
 
     const supabase = createClient()
-
-    // Remove from inventory
     await supabase.from('inventory').delete().eq('id', sellItem.id)
-
-    // Create listing
     await supabase.from('trade_offers').insert({
       seller_id: character.id,
       item_id: sellItem.item.id,
       price_gold: price,
     })
 
-    showToast('success', `${sellItem.item.name} zum Verkauf angeboten!`)
+    showToast('success', `${sellItem.item.name} listed for sale!`)
     setShowSellModal(false)
     setSellItem(null)
     setSellPrice('')
@@ -210,14 +202,13 @@ export default function MarktplatzPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-xl font-bold text-primary-light flex items-center gap-2">
-          <ArrowLeftRight className="w-5 h-5" /> Marktplatz
+          <ArrowLeftRight className="w-5 h-5" /> Marketplace
         </h1>
         <Button size="sm" onClick={() => setShowSellModal(true)}>
-          <Plus className="w-4 h-4 mr-1" /> Verkaufen
+          <Plus className="w-4 h-4 mr-1" /> Sell
         </Button>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 border-b border-bg-light">
         <button
           onClick={() => setTab('browse')}
@@ -225,7 +216,7 @@ export default function MarktplatzPage() {
             tab === 'browse' ? 'text-primary-light border-b-2 border-primary' : 'text-text-muted hover:text-parchment'
           }`}
         >
-          Marktplatz
+          Marketplace
         </button>
         <button
           onClick={() => setTab('my-offers')}
@@ -233,47 +224,33 @@ export default function MarktplatzPage() {
             tab === 'my-offers' ? 'text-primary-light border-b-2 border-primary' : 'text-text-muted hover:text-parchment'
           }`}
         >
-          Meine Angebote
+          My Offers
         </button>
       </div>
 
       {tab === 'browse' && (
         <>
-          {/* Filters */}
           <div className="flex flex-wrap items-center gap-3">
             <Filter className="w-4 h-4 text-text-muted" />
-            <select
-              value={slotFilter}
-              onChange={(e) => setSlotFilter(e.target.value)}
-              className="px-2 py-1 rounded bg-bg-darkest border border-bg-light text-parchment text-xs focus:outline-none"
-            >
-              <option value="all">Alle Slots</option>
+            <select value={slotFilter} onChange={(e) => setSlotFilter(e.target.value)} className="px-2 py-1 rounded bg-bg-darkest border border-bg-light text-parchment text-xs focus:outline-none">
+              <option value="all">All Slots</option>
               {['weapon', 'shield', 'head', 'chest', 'legs', 'boots', 'ring', 'amulet'].map((s) => (
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>
-            <select
-              value={rarityFilter}
-              onChange={(e) => setRarityFilter(e.target.value)}
-              className="px-2 py-1 rounded bg-bg-darkest border border-bg-light text-parchment text-xs focus:outline-none"
-            >
-              <option value="all">Alle Raritaeten</option>
+            <select value={rarityFilter} onChange={(e) => setRarityFilter(e.target.value)} className="px-2 py-1 rounded bg-bg-darkest border border-bg-light text-parchment text-xs focus:outline-none">
+              <option value="all">All Rarities</option>
               {['common', 'uncommon', 'rare', 'epic', 'legendary'].map((r) => (
                 <option key={r} value={r}>{r}</option>
               ))}
             </select>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'price' | 'rarity' | 'newest')}
-              className="px-2 py-1 rounded bg-bg-darkest border border-bg-light text-parchment text-xs focus:outline-none"
-            >
-              <option value="newest">Neueste</option>
-              <option value="price">Preis</option>
-              <option value="rarity">Seltenheit</option>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as 'price' | 'rarity' | 'newest')} className="px-2 py-1 rounded bg-bg-darkest border border-bg-light text-parchment text-xs focus:outline-none">
+              <option value="newest">Newest</option>
+              <option value="price">Price</option>
+              <option value="rarity">Rarity</option>
             </select>
           </div>
 
-          {/* Offers Grid */}
           {loading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
@@ -283,23 +260,15 @@ export default function MarktplatzPage() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredOffers.map((offer) => (
-                <div
-                  key={offer.id}
-                  onClick={() => setSelectedOffer(offer)}
-                  className="fantasy-card p-4 cursor-pointer hover:border-primary/50 transition-all"
-                >
-                  <div className="flex justify-center mb-3">
-                    <ItemCard item={offer.item} />
-                  </div>
+                <div key={offer.id} onClick={() => setSelectedOffer(offer)} className="fantasy-card p-4 cursor-pointer hover:border-primary/50 transition-all">
+                  <div className="flex justify-center mb-3"><ItemCard item={offer.item} /></div>
                   <p className="text-sm text-parchment font-semibold text-center truncate">{offer.item.name}</p>
                   <p className="text-[10px] text-text-muted text-center uppercase">{offer.item.slot} - {offer.item.rarity}</p>
-                  <div className="flex justify-center mt-2">
-                    <GoldDisplay amount={offer.price_gold} type="gold" />
-                  </div>
+                  <div className="flex justify-center mt-2"><GoldDisplay amount={offer.price_gold} type="gold" /></div>
                 </div>
               ))}
               {filteredOffers.length === 0 && (
-                <p className="col-span-full text-center text-text-muted py-8">Keine Angebote gefunden.</p>
+                <p className="col-span-full text-center text-text-muted py-8">No offers found.</p>
               )}
             </div>
           )}
@@ -309,7 +278,7 @@ export default function MarktplatzPage() {
       {tab === 'my-offers' && (
         <div className="space-y-3">
           {myOffers.length === 0 && (
-            <p className="text-center text-text-muted py-8">Du hast keine aktiven Angebote.</p>
+            <p className="text-center text-text-muted py-8">You have no active offers.</p>
           )}
           {myOffers.map((offer) => (
             <div key={offer.id} className="fantasy-card p-4 flex items-center gap-4">
@@ -318,14 +287,8 @@ export default function MarktplatzPage() {
                 <p className="text-sm text-parchment font-semibold">{offer.item.name}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <GoldDisplay amount={offer.price_gold} type="gold" />
-                  <span className={`text-xs px-2 py-0.5 rounded ${
-                    offer.status === 'active'
-                      ? 'bg-stamina/20 text-stamina'
-                      : offer.status === 'sold'
-                      ? 'bg-primary/20 text-primary-light'
-                      : 'bg-bg-light text-text-muted'
-                  }`}>
-                    {offer.status === 'active' ? 'Aktiv' : offer.status === 'sold' ? 'Verkauft' : 'Abgebrochen'}
+                  <span className={`text-xs px-2 py-0.5 rounded ${offer.status === 'active' ? 'bg-stamina/20 text-stamina' : offer.status === 'sold' ? 'bg-primary/20 text-primary-light' : 'bg-bg-light text-text-muted'}`}>
+                    {offer.status === 'active' ? 'Active' : offer.status === 'sold' ? 'Sold' : 'Cancelled'}
                   </span>
                 </div>
               </div>
@@ -339,12 +302,7 @@ export default function MarktplatzPage() {
         </div>
       )}
 
-      {/* Buy Modal */}
-      <Modal
-        open={selectedOffer !== null}
-        onClose={() => setSelectedOffer(null)}
-        title="Item kaufen"
-      >
+      <Modal open={selectedOffer !== null} onClose={() => setSelectedOffer(null)} title="Buy Item">
         {selectedOffer && (
           <div className="space-y-4">
             <div className="flex items-center gap-4">
@@ -355,38 +313,27 @@ export default function MarktplatzPage() {
               </div>
             </div>
             <div className="flex items-center justify-between p-3 rounded bg-bg-darkest/50">
-              <span className="text-sm text-text-muted">Preis:</span>
+              <span className="text-sm text-text-muted">Price:</span>
               <GoldDisplay amount={selectedOffer.price_gold} type="gold" />
             </div>
-            <Button onClick={() => buyOffer(selectedOffer)} className="w-full">
-              Kaufen
-            </Button>
+            <Button onClick={() => buyOffer(selectedOffer)} className="w-full">Buy</Button>
           </div>
         )}
       </Modal>
 
-      {/* Sell Modal */}
-      <Modal
-        open={showSellModal}
-        onClose={() => { setShowSellModal(false); setSellItem(null) }}
-        title="Item verkaufen"
-      >
+      <Modal open={showSellModal} onClose={() => { setShowSellModal(false); setSellItem(null) }} title="Sell Item">
         <div className="space-y-4">
           {!sellItem ? (
             <>
-              <p className="text-xs text-text-muted">Waehle ein Item aus deinem Inventar:</p>
+              <p className="text-xs text-text-muted">Choose an item from your inventory:</p>
               <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto">
                 {unequippedItems.map((inv) => (
-                  <div
-                    key={inv.id}
-                    onClick={() => setSellItem(inv)}
-                    className="cursor-pointer hover:scale-110 transition-transform"
-                  >
+                  <div key={inv.id} onClick={() => setSellItem(inv)} className="cursor-pointer hover:scale-110 transition-transform">
                     <ItemCard item={inv.item} />
                   </div>
                 ))}
                 {unequippedItems.length === 0 && (
-                  <p className="col-span-4 text-center text-text-muted py-4">Keine Items verfuegbar.</p>
+                  <p className="col-span-4 text-center text-text-muted py-4">No items available.</p>
                 )}
               </div>
             </>
@@ -396,26 +343,14 @@ export default function MarktplatzPage() {
                 <ItemCard item={sellItem.item} />
                 <div>
                   <p className="text-parchment font-semibold">{sellItem.item.name}</p>
-                  <button onClick={() => setSellItem(null)} className="text-xs text-accent hover:underline">
-                    Anderes Item waehlen
-                  </button>
+                  <button onClick={() => setSellItem(null)} className="text-xs text-accent hover:underline">Choose another item</button>
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-display text-text-muted uppercase tracking-wider mb-1">
-                  Preis (Gold)
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  value={sellPrice}
-                  onChange={(e) => setSellPrice(e.target.value)}
-                  className="w-full px-3 py-2 rounded bg-bg-darkest border border-bg-light text-parchment text-sm focus:outline-none focus:border-primary"
-                />
+                <label className="block text-xs font-display text-text-muted uppercase tracking-wider mb-1">Price (Gold)</label>
+                <input type="number" min={1} value={sellPrice} onChange={(e) => setSellPrice(e.target.value)} className="w-full px-3 py-2 rounded bg-bg-darkest border border-bg-light text-parchment text-sm focus:outline-none focus:border-primary" />
               </div>
-              <Button onClick={createListing} className="w-full">
-                Angebot erstellen
-              </Button>
+              <Button onClick={createListing} className="w-full">Create Listing</Button>
             </>
           )}
         </div>

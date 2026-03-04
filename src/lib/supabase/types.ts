@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          description: string
+          gem_reward: number
+          icon_name: string
+          id: string
+          name: string
+          requirement_type: string
+          requirement_value: number
+          xp_reward: number
+        }
+        Insert: {
+          category: string
+          description: string
+          gem_reward?: number
+          icon_name: string
+          id?: string
+          name: string
+          requirement_type: string
+          requirement_value?: number
+          xp_reward?: number
+        }
+        Update: {
+          category?: string
+          description?: string
+          gem_reward?: number
+          icon_name?: string
+          id?: string
+          name?: string
+          requirement_type?: string
+          requirement_value?: number
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       active_quests: {
         Row: {
           character_id: string
@@ -136,6 +172,119 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      daily_rewards: {
+        Row: {
+          character_id: string
+          id: string
+          last_claimed: string | null
+          streak_count: number
+        }
+        Insert: {
+          character_id: string
+          id?: string
+          last_claimed?: string | null
+          streak_count?: number
+        }
+        Update: {
+          character_id?: string
+          id?: string
+          last_claimed?: string | null
+          streak_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_rewards_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: true
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dungeon_progress: {
+        Row: {
+          character_id: string
+          completed_at: string | null
+          current_stage: number
+          dungeon_id: string
+          id: string
+          started_at: string
+        }
+        Insert: {
+          character_id: string
+          completed_at?: string | null
+          current_stage?: number
+          dungeon_id: string
+          id?: string
+          started_at?: string
+        }
+        Update: {
+          character_id?: string
+          completed_at?: string | null
+          current_stage?: number
+          dungeon_id?: string
+          id?: string
+          started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dungeon_progress_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dungeon_progress_dungeon_id_fkey"
+            columns: ["dungeon_id"]
+            isOneToOne: false
+            referencedRelation: "dungeons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dungeons: {
+        Row: {
+          boss_name: string
+          cooldown_hours: number
+          created_at: string
+          description: string
+          gem_reward: number
+          gold_reward: number
+          id: string
+          min_level: number
+          name: string
+          stages: number
+          xp_reward: number
+        }
+        Insert: {
+          boss_name?: string
+          cooldown_hours?: number
+          created_at?: string
+          description?: string
+          gem_reward?: number
+          gold_reward?: number
+          id?: string
+          min_level?: number
+          name: string
+          stages?: number
+          xp_reward?: number
+        }
+        Update: {
+          boss_name?: string
+          cooldown_hours?: number
+          created_at?: string
+          description?: string
+          gem_reward?: number
+          gold_reward?: number
+          id?: string
+          min_level?: number
+          name?: string
+          stages?: number
+          xp_reward?: number
+        }
+        Relationships: []
       }
       characters: {
         Row: {
@@ -380,6 +529,42 @@ export type Database = {
           stat_bonuses?: Json
         }
         Relationships: []
+      }
+      player_achievements: {
+        Row: {
+          achievement_id: string
+          character_id: string
+          id: string
+          unlocked_at: string
+        }
+        Insert: {
+          achievement_id: string
+          character_id: string
+          id?: string
+          unlocked_at?: string
+        }
+        Update: {
+          achievement_id?: string
+          character_id?: string
+          id?: string
+          unlocked_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_achievements_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

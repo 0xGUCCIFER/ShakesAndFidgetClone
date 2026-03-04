@@ -10,10 +10,10 @@ type Tab = 'login' | 'register'
 type CharClass = 'warrior' | 'mage' | 'rogue' | 'paladin'
 
 const classCards: { value: CharClass; label: string; icon: typeof Shield; desc: string; stats: string }[] = [
-  { value: 'warrior', label: 'Krieger', icon: Shield, desc: 'Ein maechtiger Kaempfer mit hoher Ausdauer und Staerke.', stats: 'STR 15 / CON 13 / HP 130' },
-  { value: 'mage', label: 'Magier', icon: Wand2, desc: 'Ein weiser Zauberer mit verheerender magischer Kraft.', stats: 'INT 16 / LCK 6 / HP 80' },
-  { value: 'rogue', label: 'Schurke', icon: Sword, desc: 'Ein flinker Schatten mit toedlicher Praezision.', stats: 'DEX 16 / LCK 8 / HP 90' },
-  { value: 'paladin', label: 'Paladin', icon: Cross, desc: 'Ein heiliger Ritter mit goettlichem Schutz.', stats: 'STR 12 / CON 14 / HP 120' },
+  { value: 'warrior', label: 'Warrior', icon: Shield, desc: 'A mighty fighter with high endurance and strength.', stats: 'STR 15 / CON 13 / HP 130' },
+  { value: 'mage', label: 'Mage', icon: Wand2, desc: 'A wise sorcerer with devastating magical power.', stats: 'INT 16 / LCK 6 / HP 80' },
+  { value: 'rogue', label: 'Rogue', icon: Sword, desc: 'A swift shadow with deadly precision.', stats: 'DEX 16 / LCK 8 / HP 90' },
+  { value: 'paladin', label: 'Paladin', icon: Cross, desc: 'A holy knight with divine protection.', stats: 'STR 12 / CON 14 / HP 120' },
 ]
 
 export default function AuthPage() {
@@ -35,7 +35,7 @@ export default function AuthPage() {
     if (result.error) {
       setError(result.error)
     } else {
-      router.push('/game/taverne')
+      router.push('/game/tavern')
     }
   }
 
@@ -43,7 +43,7 @@ export default function AuthPage() {
     e.preventDefault()
     setError('')
     if (!displayName.trim()) {
-      setError('Bitte gib einen Namen ein.')
+      setError('Please enter a hero name.')
       return
     }
     setLoading(true)
@@ -52,7 +52,7 @@ export default function AuthPage() {
     if (result.error) {
       setError(result.error)
     } else {
-      router.push('/game/taverne')
+      router.push('/game/tavern')
     }
   }
 
@@ -63,7 +63,7 @@ export default function AuthPage() {
           Blades &amp; Bravery
         </h1>
         <p className="text-center text-text-muted text-sm mb-6">
-          Betritt die Welt der Abenteuer
+          Enter the world of adventure
         </p>
 
         {/* Tabs */}
@@ -76,7 +76,7 @@ export default function AuthPage() {
                 : 'text-text-muted hover:text-parchment'
             }`}
           >
-            Anmelden
+            Login
           </button>
           <button
             onClick={() => { setTab('register'); setError('') }}
@@ -86,7 +86,7 @@ export default function AuthPage() {
                 : 'text-text-muted hover:text-parchment'
             }`}
           >
-            Registrieren
+            Register
           </button>
         </div>
 
@@ -100,7 +100,7 @@ export default function AuthPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-xs font-display text-text-muted uppercase tracking-wider mb-1">
-                E-Mail
+                Email
               </label>
               <input
                 type="email"
@@ -112,7 +112,7 @@ export default function AuthPage() {
             </div>
             <div>
               <label className="block text-xs font-display text-text-muted uppercase tracking-wider mb-1">
-                Passwort
+                Password
               </label>
               <input
                 type="password"
@@ -123,14 +123,14 @@ export default function AuthPage() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Laden...' : 'Anmelden'}
+              {loading ? 'Loading...' : 'Login'}
             </Button>
           </form>
         ) : (
           <form onSubmit={handleRegister} className="space-y-4">
             <div>
               <label className="block text-xs font-display text-text-muted uppercase tracking-wider mb-1">
-                E-Mail
+                Email
               </label>
               <input
                 type="email"
@@ -142,7 +142,7 @@ export default function AuthPage() {
             </div>
             <div>
               <label className="block text-xs font-display text-text-muted uppercase tracking-wider mb-1">
-                Passwort
+                Password
               </label>
               <input
                 type="password"
@@ -155,7 +155,7 @@ export default function AuthPage() {
             </div>
             <div>
               <label className="block text-xs font-display text-text-muted uppercase tracking-wider mb-1">
-                Heldenname
+                Hero Name
               </label>
               <input
                 type="text"
@@ -167,7 +167,7 @@ export default function AuthPage() {
             </div>
             <div>
               <label className="block text-xs font-display text-text-muted uppercase tracking-wider mb-2">
-                Klasse waehlen
+                Choose Class
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {classCards.map((c) => {
@@ -198,7 +198,7 @@ export default function AuthPage() {
               </div>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Laden...' : 'Abenteuer starten'}
+              {loading ? 'Loading...' : 'Start Adventure'}
             </Button>
           </form>
         )}

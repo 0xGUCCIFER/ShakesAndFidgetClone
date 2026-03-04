@@ -2,14 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Beer, Swords, ShoppingBag, Users, ArrowLeftRight } from 'lucide-react'
+import { Beer, Swords, ShoppingBag, Users, ArrowLeftRight, Trophy, Castle } from 'lucide-react'
 
 const navItems = [
-  { href: '/game/taverne', label: 'Taverne', icon: Beer },
+  { href: '/game/tavern', label: 'Tavern', icon: Beer },
   { href: '/game/arena', label: 'Arena', icon: Swords },
+  { href: '/game/dungeon', label: 'Dungeon', icon: Castle },
   { href: '/game/shop', label: 'Shop', icon: ShoppingBag },
-  { href: '/game/gilde', label: 'Gilde', icon: Users },
-  { href: '/game/marktplatz', label: 'Markt', icon: ArrowLeftRight },
+  { href: '/game/guild', label: 'Guild', icon: Users },
+  { href: '/game/marketplace', label: 'Market', icon: ArrowLeftRight },
+  { href: '/game/achievements', label: 'Achieve', icon: Trophy },
 ]
 
 export function Navbar() {

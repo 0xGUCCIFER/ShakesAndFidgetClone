@@ -47,14 +47,14 @@ export function Sidebar() {
           className="flex items-center gap-2 text-xs text-text-muted hover:text-primary transition-colors"
         >
           <Backpack className="w-3.5 h-3.5" />
-          Inventar
+          Inventory
         </Link>
         <Link
           href="/game/character"
           className="flex items-center gap-2 text-xs text-text-muted hover:text-primary transition-colors"
         >
           <User className="w-3.5 h-3.5" />
-          Charakter
+          Character
         </Link>
       </div>
     </aside>

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { GameLayout } from '@/components/layout/GameLayout'
 import { GameDataLoader } from './GameDataLoader'
+import { DailyRewardModal } from '@/components/game/DailyRewardModal'
 
 export default async function GameRootLayout({
   children,
@@ -51,6 +52,7 @@ export default async function GameRootLayout({
         inventory={inventoryData}
         activeQuest={activeQuestData}
       />
+      <DailyRewardModal />
       {children}
     </GameLayout>
   )

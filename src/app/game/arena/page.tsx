@@ -129,7 +129,7 @@ export default function ArenaPage() {
       setHistory(
         data.map((f) => ({
           id: f.id,
-          opponent_name: f.attacker_id === character.id ? 'Gegner' : 'Angreifer',
+          opponent_name: f.attacker_id === character.id ? 'Opponent' : 'Attacker',
           won: f.winner_id === character.id,
           honor: f.honor_gained,
           fought_at: f.fought_at,
@@ -189,7 +189,6 @@ export default function ArenaPage() {
     })
 
     // Update ranking
-    // Update arena ranking
     try {
       const { data: ranking } = await supabase
         .from('arena_rankings')
@@ -221,7 +220,7 @@ export default function ArenaPage() {
     setShowFightModal(true)
     setFighting(false)
 
-    showToast(won ? 'success' : 'error', won ? 'Kampf gewonnen!' : 'Kampf verloren!')
+    showToast(won ? 'success' : 'error', won ? 'Fight won!' : 'Fight lost!')
   }
 
   // Animate fight rounds
@@ -237,9 +236,9 @@ export default function ArenaPage() {
   }, [showFightModal, displayRound, fightResult])
 
   const tabs: { value: ArenaTab; label: string; icon: typeof Swords }[] = [
-    { value: 'fight', label: 'Kampf', icon: Swords },
-    { value: 'leaderboard', label: 'Rangliste', icon: Trophy },
-    { value: 'history', label: 'Historie', icon: History },
+    { value: 'fight', label: 'Fight', icon: Swords },
+    { value: 'leaderboard', label: 'Leaderboard', icon: Trophy },
+    { value: 'history', label: 'History', icon: History },
   ]
 
   return (
@@ -271,7 +270,7 @@ export default function ArenaPage() {
       {tab === 'fight' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {opponents.length === 0 ? (
-            <p className="col-span-3 text-center text-text-muted py-8">Keine Gegner gefunden.</p>
+            <p className="col-span-3 text-center text-text-muted py-8">No opponents found.</p>
           ) : (
             opponents.map((opp) => (
               <div key={opp.id} className="fantasy-card p-5 flex flex-col items-center gap-4">
@@ -299,7 +298,7 @@ export default function ArenaPage() {
                   disabled={fighting}
                   className="w-full"
                 >
-                  {fighting ? 'Kaempfe...' : 'Kaempfen'}
+                  {fighting ? 'Fighting...' : 'Fight'}
                 </Button>
               </div>
             ))
@@ -314,10 +313,10 @@ export default function ArenaPage() {
             <thead>
               <tr className="text-xs text-text-muted uppercase tracking-wider bg-bg-darkest/50">
                 <th className="text-left p-3">#</th>
-                <th className="text-left p-3">Spieler</th>
-                <th className="text-center p-3">Siege</th>
-                <th className="text-center p-3">Niederlagen</th>
-                <th className="text-right p-3">Ehre</th>
+                <th className="text-left p-3">Player</th>
+                <th className="text-center p-3">Wins</th>
+                <th className="text-center p-3">Losses</th>
+                <th className="text-right p-3">Honor</th>
               </tr>
             </thead>
             <tbody>
@@ -337,7 +336,7 @@ export default function ArenaPage() {
               ))}
               {leaderboard.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="text-center text-text-muted py-8">Noch keine Kaempfe.</td>
+                  <td colSpan={5} className="text-center text-text-muted py-8">No fights yet.</td>
                 </tr>
               )}
             </tbody>
@@ -349,20 +348,20 @@ export default function ArenaPage() {
       {tab === 'history' && (
         <div className="space-y-2">
           {history.length === 0 && (
-            <p className="text-center text-text-muted py-8">Noch keine Kaempfe.</p>
+            <p className="text-center text-text-muted py-8">No fights yet.</p>
           )}
           {history.map((h) => (
             <div key={h.id} className="fantasy-card p-3 flex items-center justify-between">
               <div>
                 <span className={h.won ? 'text-stamina font-semibold' : 'text-secondary-light font-semibold'}>
-                  {h.won ? 'Sieg' : 'Niederlage'}
+                  {h.won ? 'Victory' : 'Defeat'}
                 </span>
                 <span className="text-text-muted text-xs ml-2">
-                  {new Date(h.fought_at).toLocaleDateString('de-DE')}
+                  {new Date(h.fought_at).toLocaleDateString('en-US')}
                 </span>
               </div>
               <span className={`text-sm ${h.won ? 'text-primary-light' : 'text-secondary-light'}`}>
-                {h.won ? '+' : '-'}{h.honor} Ehre
+                {h.won ? '+' : '-'}{h.honor} Honor
               </span>
             </div>
           ))}
@@ -373,22 +372,22 @@ export default function ArenaPage() {
       <Modal
         open={showFightModal}
         onClose={() => setShowFightModal(false)}
-        title="Kampfergebnis"
+        title="Fight Result"
       >
         {fightResult && (
           <div className="space-y-4">
             <div className="text-center">
               <p className={`text-2xl font-display font-bold ${fightResult.won ? 'text-stamina' : 'text-secondary-light'}`}>
-                {fightResult.won ? 'SIEG!' : 'NIEDERLAGE'}
+                {fightResult.won ? 'VICTORY!' : 'DEFEAT'}
               </p>
-              <p className="text-sm text-text-muted mt-1">gegen {fightResult.opponentName}</p>
+              <p className="text-sm text-text-muted mt-1">vs {fightResult.opponentName}</p>
             </div>
 
             {/* Animated rounds */}
             <div className="max-h-48 overflow-y-auto space-y-1">
               {fightResult.rounds.slice(0, displayRound).map((r) => (
                 <div key={r.round} className="flex items-center gap-2 text-xs p-1.5 rounded bg-bg-darkest/50">
-                  <span className="text-text-muted w-12">Runde {r.round}</span>
+                  <span className="text-text-muted w-12">Round {r.round}</span>
                   <span className="text-secondary-light">-{r.attacker_damage} DMG</span>
                   <span className="text-text-muted mx-1">|</span>
                   <span className="text-stamina">-{r.defender_damage} DMG</span>
@@ -402,7 +401,7 @@ export default function ArenaPage() {
             {displayRound >= fightResult.rounds.length && (
               <div className="text-center space-y-1">
                 <p className="text-sm text-parchment">
-                  Ehre: <span className={fightResult.honor > 0 ? 'text-stamina' : 'text-secondary-light'}>
+                  Honor: <span className={fightResult.honor > 0 ? 'text-stamina' : 'text-secondary-light'}>
                     {fightResult.honor > 0 ? '+' : ''}{fightResult.honor}
                   </span>
                 </p>
@@ -413,7 +412,7 @@ export default function ArenaPage() {
             )}
 
             <div className="text-center">
-              <Button onClick={() => setShowFightModal(false)}>Schliessen</Button>
+              <Button onClick={() => setShowFightModal(false)}>Close</Button>
             </div>
           </div>
         )}

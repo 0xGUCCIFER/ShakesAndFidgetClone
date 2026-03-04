@@ -89,7 +89,7 @@ export default function ShopPage() {
 
     const balance = currency === 'gold' ? character.gold : character.gems
     if (balance < price) {
-      showToast('error', `Nicht genug ${currency === 'gold' ? 'Gold' : 'Edelsteine'}!`)
+      showToast('error', `Not enough ${currency === 'gold' ? 'gold' : 'gems'}!`)
       setBuying(false)
       return
     }
@@ -119,7 +119,7 @@ export default function ShopPage() {
         equipped: false,
         slot_index: 0,
       })
-      showToast('success', `${shopItem.item.name} gekauft!`)
+      showToast('success', `${shopItem.item.name} purchased!`)
     }
 
     setBuying(false)
@@ -140,9 +140,9 @@ export default function ShopPage() {
 
   const tabs: { value: ShopTab; label: string }[] = [
     { value: 'featured', label: 'Featured' },
-    { value: 'weapon', label: 'Waffen' },
-    { value: 'armor', label: 'Ruestung' },
-    { value: 'accessories', label: 'Accessoires' },
+    { value: 'weapon', label: 'Weapons' },
+    { value: 'armor', label: 'Armor' },
+    { value: 'accessories', label: 'Accessories' },
   ]
 
   return (
@@ -206,7 +206,7 @@ export default function ShopPage() {
             </div>
           ))}
           {filteredItems.length === 0 && (
-            <p className="col-span-full text-center text-text-muted py-8">Keine Items in dieser Kategorie.</p>
+            <p className="col-span-full text-center text-text-muted py-8">No items in this category.</p>
           )}
         </div>
       )}
@@ -215,7 +215,7 @@ export default function ShopPage() {
       <Modal
         open={selectedItem !== null}
         onClose={() => setSelectedItem(null)}
-        title="Item kaufen"
+        title="Buy Item"
       >
         {selectedItem && (
           <div className="space-y-4">

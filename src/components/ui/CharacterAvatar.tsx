@@ -1,11 +1,11 @@
 import { Shield, Wand2, Sword, Cross } from 'lucide-react'
 import type { CharacterClass } from '@/lib/store/types'
 
-const classConfig: Record<CharacterClass, { icon: typeof Shield; color: string; bg: string }> = {
-  warrior: { icon: Shield, color: 'text-secondary-light', bg: 'bg-secondary/20' },
-  mage: { icon: Wand2, color: 'text-accent', bg: 'bg-accent/20' },
-  rogue: { icon: Sword, color: 'text-stamina', bg: 'bg-stamina/20' },
-  paladin: { icon: Cross, color: 'text-primary', bg: 'bg-primary/20' },
+const classConfig: Record<CharacterClass, { icon: typeof Shield; color: string; bg: string; border: string }> = {
+  warrior: { icon: Shield, color: 'text-secondary-light', bg: 'bg-secondary/20', border: 'border-red-500' },
+  mage: { icon: Wand2, color: 'text-accent', bg: 'bg-accent/20', border: 'border-blue-500' },
+  rogue: { icon: Sword, color: 'text-stamina', bg: 'bg-stamina/20', border: 'border-green-500' },
+  paladin: { icon: Cross, color: 'text-primary', bg: 'bg-primary/20', border: 'border-yellow-500' },
 }
 
 interface CharacterAvatarProps {
@@ -33,7 +33,7 @@ export function CharacterAvatar({ characterClass, level, name, size = 'md' }: Ch
 
   return (
     <div className="flex items-center gap-3">
-      <div className={`relative ${sizeMap[size]} rounded-full ${config.bg} border-2 border-bg-light flex items-center justify-center`}>
+      <div className={`relative ${sizeMap[size]} rounded-full ${config.bg} border-2 ${config.border} flex items-center justify-center`}>
         <Icon className={`${iconSize[size]} ${config.color}`} />
         <span className="absolute -bottom-1 -right-1 bg-bg-dark border border-primary text-primary text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
           {level}
