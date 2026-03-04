@@ -131,10 +131,14 @@ export default function TavernPage() {
     showToast('success', 'Quest completed!')
   }
 
+  const availableQuests = activeQuest
+    ? quests.filter((q) => q.id !== activeQuest.quest.id)
+    : quests
+
   const filteredQuests =
     filter === 'all'
-      ? quests
-      : quests.filter((q) => q.difficulty === filter)
+      ? availableQuests
+      : availableQuests.filter((q) => q.difficulty === filter)
 
   const filters: { value: DifficultyFilter; label: string }[] = [
     { value: 'all', label: 'All' },
