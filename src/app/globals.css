@@ -1,26 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-darkest: #1a0f0a;
+  --bg-dark: #2d1f14;
+  --bg-medium: #3d2b1e;
+  --bg-light: #4d3a2a;
+  --primary: #c9a84c;
+  --primary-light: #e8c860;
+  --secondary: #8b2500;
+  --secondary-light: #a03020;
+  --accent: #4a90d9;
+  --text-parchment: #f4e4bc;
+  --text-light: #e8d5a3;
+  --text-muted: #a89070;
+  --rarity-common: #9d9d9d;
+  --rarity-uncommon: #1eff00;
+  --rarity-rare: #0070dd;
+  --rarity-epic: #a335ee;
+  --rarity-legendary: #ff8000;
+  --hp-red: #c0392b;
+  --xp-blue: #2980b9;
+  --stamina-green: #27ae60;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-bg-darkest: var(--bg-darkest);
+  --color-bg-dark: var(--bg-dark);
+  --color-bg-medium: var(--bg-medium);
+  --color-bg-light: var(--bg-light);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-secondary: var(--secondary);
+  --color-secondary-light: var(--secondary-light);
+  --color-accent: var(--accent);
+  --color-parchment: var(--text-parchment);
+  --color-text-light: var(--text-light);
+  --color-text-muted: var(--text-muted);
+  --color-rarity-common: var(--rarity-common);
+  --color-rarity-uncommon: var(--rarity-uncommon);
+  --color-rarity-rare: var(--rarity-rare);
+  --color-rarity-epic: var(--rarity-epic);
+  --color-rarity-legendary: var(--rarity-legendary);
+  --color-hp: var(--hp-red);
+  --color-xp: var(--xp-blue);
+  --color-stamina: var(--stamina-green);
+  --font-display: 'Cinzel', serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-darkest);
+  color: var(--text-parchment);
+  font-family: system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+/* Fantasy card frame */
+.fantasy-card {
+  background:
+    linear-gradient(135deg, #3d2b1e 0%, #2d1f14 50%, #3d2b1e 100%);
+  border: 2px solid #5a4230;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 20px rgba(0, 0, 0, 0.5),
+    0 0 10px rgba(0, 0, 0, 0.8),
+    0 2px 0 #6b5030,
+    0 -2px 0 #1a0f0a;
+  position: relative;
+}
+
+.fantasy-card::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(201, 168, 76, 0.15);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* Parchment background */
+.parchment-bg {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.02) 2px,
+      rgba(0, 0, 0, 0.02) 4px
+    ),
+    linear-gradient(135deg, #f4e4bc 0%, #e8d5a3 50%, #f4e4bc 100%);
+  color: #2d1f14;
+}
+
+/* Rarity glow effects */
+.glow-common { box-shadow: 0 0 8px rgba(157, 157, 157, 0.4); }
+.glow-uncommon { box-shadow: 0 0 8px rgba(30, 255, 0, 0.4); }
+.glow-rare { box-shadow: 0 0 12px rgba(0, 112, 221, 0.5); }
+.glow-epic { box-shadow: 0 0 14px rgba(163, 53, 238, 0.5); }
+.glow-legendary {
+  box-shadow: 0 0 16px rgba(255, 128, 0, 0.6);
+  animation: legendary-pulse 2s ease-in-out infinite;
+}
+
+@keyframes legendary-pulse {
+  0%, 100% { box-shadow: 0 0 16px rgba(255, 128, 0, 0.6); }
+  50% { box-shadow: 0 0 24px rgba(255, 128, 0, 0.9); }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-darkest);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Fantasy button base */
+.btn-fantasy {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
 }
