@@ -28,8 +28,18 @@ export async function signUp(
     return { error: error.message }
   }
 
-  // Profile is auto-created by database trigger on auth.users
-  // which also cascades to create character + arena_ranking
+  // Profile + character are auto-created by database trigger on auth.users
+  // Auto-sign in after registration (email is auto-confirmed by trigger)
+  if (data.user && !data.session) {
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    if (signInError) {
+      return { error: signInError.message }
+    }
+  }
+
   return { data: data.user }
 }
 
