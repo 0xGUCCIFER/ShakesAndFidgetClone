@@ -91,7 +91,6 @@ export function DailyRewardModal() {
             const reward = getRewardForDay(day)
             const isCurrentDay = day === nextDay && canClaim && !claimed
             const isPast = day < nextDay || (day === nextDay && claimed)
-            const isFuture = day > nextDay || (day > nextDay && !claimed)
 
             return (
               <div

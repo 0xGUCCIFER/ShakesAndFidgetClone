@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useGameStore } from '@/lib/store/gameStore'
 import { Button, Modal } from '@/components/ui'
 import { showToast } from '@/components/ui/Toast'
-import { Castle, Skull, Swords, ChevronRight, Lock, Clock, Trophy, Star } from 'lucide-react'
+import { Castle, Skull, Swords, ChevronRight, Lock, Clock, Trophy } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 interface Dungeon {
