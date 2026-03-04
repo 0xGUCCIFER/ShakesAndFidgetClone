@@ -121,7 +121,7 @@ export function DailyRewardModal() {
         </div>
 
         <div className="text-center text-xs text-text-muted">
-          Current streak: <span className="text-primary-light font-semibold">{streak}</span> days
+          Current streak: <span className="text-primary-light font-semibold">{streak}</span> {streak === 1 ? 'day' : 'days'}
         </div>
 
         {/* Claim or claimed state */}
