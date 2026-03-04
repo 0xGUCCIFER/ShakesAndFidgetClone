@@ -48,12 +48,20 @@ export default function AuthPage() {
     }
     setLoading(true)
     const result = await signUp(email, password, displayName, selectedClass)
-    setLoading(false)
     if (result.error) {
       setError(result.error)
-    } else {
-      router.push('/game/tavern')
+      setLoading(false)
+      return
     }
+    // Auto-login after successful registration
+    const loginResult = await signIn(email, password)
+    if (loginResult.error) {
+      setError(loginResult.error)
+      setLoading(false)
+      return
+    }
+    router.push('/game/tavern')
+    router.refresh()
   }
 
   return (

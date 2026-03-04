@@ -13,7 +13,7 @@ const navItems = [
   { href: '/game/inventory', label: 'Items', icon: Backpack },
   { href: '/game/guild', label: 'Guild', icon: Users },
   { href: '/game/marketplace', label: 'Market', icon: ArrowLeftRight },
-  { href: '/game/achievements', label: 'Achieve', icon: Trophy },
+  { href: '/game/achievements', label: 'Feats', icon: Trophy },
 ]
 
 export function Navbar() {
